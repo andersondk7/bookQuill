@@ -1,6 +1,7 @@
 package org.dka.quill
 
 // lifted from documentation
+// https://zio.dev/zio-quill/getting-started
 // see https://github.com/deusaquilus/zio-quill-gettingstarted/blob/master/src/main/scala/example/module/Main.scala
 
 import io.getquill._
@@ -37,7 +38,7 @@ final case class DataServiceLive(quill: Quill.Postgres[SnakeCase]) extends Peopl
  * Demonstrates using Quill with a ZIO Module 2.0 pattern.
  */
 object MainIdiom extends ZIOAppDefault {
-  
+
   val quillLayer = Quill.Postgres.fromNamingStrategy(SnakeCase)
   val dsLayer = Quill.DataSource.fromPrefix("postgres")
 

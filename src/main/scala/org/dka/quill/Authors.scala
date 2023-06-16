@@ -1,9 +1,11 @@
 package org.dka.quill
 
-import io.getquill._
+import io.getquill.*
+
+import javax.sql.DataSource
 import io.getquill.jdbczio.Quill
-import zio.Console.printLine
 import zio._
+import zio.Console.printLine
 
 import java.sql.SQLException
 
@@ -50,16 +52,34 @@ object AuthorDaoServiceImpl {
 
 object Authors extends ZIOAppDefault {
 
-  val quillLayer    = Quill.Postgres.fromNamingStrategy(Literal)
-  val dataSource  = Quill.DataSource.fromPrefix("postgres")
+  val dataSourceLayer: ZLayer[Any, Throwable, DataSource] =
+    Quill.DataSource.fromPrefix("postgres")
+  val quillLayer: ZLayer[DataSource, Nothing, Quill.Postgres[SnakeCase]] =
+    Quill.Postgres.fromNamingStrategy(SnakeCase)
 
-  override def run = {
-    AuthorDaoService.getAuthors
+//  override def run = {
+//    AuthorDaoService.getAuthors
+//      .provide(
+//        quillLayer,
+//        dataSourceLayer,
+//        AuthorDaoServiceImpl.layer
+//      ).debug("Results")
+//      .exitCode
+//  }
+
+  // lifted from the documenation's IdiomaticApp
+  // https://github.com/zio/zio-quill/blob/master/quill-jdbc-zio/src/test/scala/io/getquill/examples/IdiomaticApp.scala
+
+  override def run =
+    (for {
+      adams <- AuthorDaoService.getAuthors("Adam")
+      _ <- printLine(adams)
+      allAuthors <- AuthorDaoService.getAuthors
+      _ <- printLine(allAuthors)
+    } yield ())
       .provide(
+        AuthorDaoServiceImpl.layer,
         quillLayer,
-        dataSource,
-        AuthorDaoServiceImpl.layer
-      ).debug("Results")
-      .exitCode
-  }
+        dataSourceLayer
+      )
 }
