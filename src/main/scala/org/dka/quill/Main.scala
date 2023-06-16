@@ -1,36 +1,49 @@
 package org.dka.quill
 
-import io.getquill.*
+// lifted from documentation
+// see https://github.com/deusaquilus/zio-quill-gettingstarted/blob/master/src/main/scala/example/module/Main.scala
+
+import io.getquill._
 import io.getquill.jdbczio.Quill
-import zio.*
+import zio._
 
 import java.sql.SQLException
 
-case class Person(name: String, age: Int)
+final case class Person(name: String, age: Int)
 
-class DataService(quill: Quill.Postgres[SnakeCase]) {
-
-  import quill.*
-
-  def getPeople: ZIO[Any, SQLException, List[Person]] = run(query[Person])
+trait PeopleDataService {
+  def getPeople: ZIO[Any, SQLException, List[Person]]
+  def getPeopleOlderThan(age: Int): ZIO[Any, SQLException, List[Person]]
 }
 
-object DataService {
-  def getPeople: ZIO[DataService, SQLException, List[Person]] =
-    ZIO.serviceWithZIO[DataService](_.getPeople)
-
-  val live = ZLayer.fromFunction(new DataService(_))
+object PeopleDataService {
+  def getPeople = ZIO.serviceWithZIO[PeopleDataService](_.getPeople)
+  def getPeopleOlderThan(age: Int) = ZIO.serviceWithZIO[PeopleDataService](_.getPeopleOlderThan(age))
 }
 
-object Main extends ZIOAppDefault {
-  override def run = {
-    DataService.getPeople
-      .provide(
-        DataService.live,
-        Quill.Postgres.fromNamingStrategy(SnakeCase),
-        Quill.DataSource.fromPrefix("postgres")
-      )
+object DataServiceLive {
+  val layer = ZLayer.fromFunction(DataServiceLive.apply _)
+}
+
+final case class DataServiceLive(quill: Quill.Postgres[SnakeCase]) extends PeopleDataService {
+  import quill._
+  def getPeople =
+    run(query[Person])
+  def getPeopleOlderThan(age: Int) =
+    run(query[Person].filter(p => p.age > lift(age)))
+}
+
+/**
+ * Demonstrates using Quill with a ZIO Module 2.0 pattern.
+ */
+object MainIdiom extends ZIOAppDefault {
+  
+  val quillLayer = Quill.Postgres.fromNamingStrategy(SnakeCase)
+  val dsLayer = Quill.DataSource.fromPrefix("postgres")
+
+  override def run =
+    PeopleDataService.getPeople
+      .provide(quillLayer, dsLayer, DataServiceLive.layer)
       .debug("Results")
       .exitCode
-  }
 }

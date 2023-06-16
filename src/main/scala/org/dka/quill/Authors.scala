@@ -15,37 +15,51 @@ final case class Author(
                          locationId: Option[String]
                        )
 
+/**
+ * define access for Authors
+ */
+trait AuthorDaoService {
+  def getByLastName(lastName: String): ZIO[Any, SQLException, List[Author]]
+  def getAll: ZIO[Any, SQLException, List[Author]]
+}
+
+/**
+ * extract implementation from environment and execute methods
+ */
+object AuthorDaoService {
+  def getAuthors = ZIO.serviceWithZIO[AuthorDaoService](_.getAll)
+  def getAuthors(lastName: String) = ZIO.serviceWithZIO[AuthorDaoService](_.getByLastName(lastName))
+}
+
+/**
+ * implementation of AuthorDaoService using quill for queries
+ */
+final case class AuthorDaoServiceImpl (quill: Quill.Postgres[SnakeCase]) extends AuthorDaoService {
+  import quill.*
+
+  override def getAll: ZIO[Any, SQLException, List[Author]] = run(query[Author])
+  override def getByLastName(lastName: String): ZIO[Any, SQLException, List[Author]] = run(query[Author].filter(a => a.lastName == lift(lastName)))
+}
+
+/**
+ * companion object provdies constructors
+ */
+object AuthorDaoServiceImpl {
+  val layer = ZLayer.fromFunction(AuthorDaoServiceImpl.apply _)
+}
+
 object Authors extends ZIOAppDefault {
 
-  case class DataService(quill: Quill.Postgres[Literal]) {
-    import quill._
-    val authors       = quote(query[Author])
-    def authorsByLastName = quote((lastName: String) => authors.filter(p => p.lastName == lastName))
-  }
-  case class ApplicationLive(dataService: DataService) {
-    import dataService.quill._
-    import dataService.quill
-    def getAuthorsByLastName(lastName: String): ZIO[Any, SQLException, List[Author]] =
-      quill.run(dataService.authorsByLastName(lift(lastName)))
-    def getAllAuthors(): ZIO[Any, SQLException, List[Author]] = quill.run(dataService.authors)
-  }
-  object Application {
-    def getAuthorsByLastname(name: String) =
-      ZIO.serviceWithZIO[ApplicationLive](_.getAuthorsByLastName(name))
-    def getAllAuthors() =
-      ZIO.serviceWithZIO[ApplicationLive](_.getAllAuthors())
-  }
+  val quillLayer    = Quill.Postgres.fromNamingStrategy(Literal)
+  val dataSource  = Quill.DataSource.fromPrefix("postgres")
 
-  val dataServiceLive = ZLayer.fromFunction(DataService.apply _)
-  val applicationLive = ZLayer.fromFunction(ApplicationLive.apply _)
-  val dataSourceLive  = Quill.DataSource.fromPrefix("postgres")
-  val postgresLive    = Quill.Postgres.fromNamingStrategy(Literal)
-
-  override def run =
-    (for {
-      adams      <- Application.getAuthorsByLastname("Adams")
-      _         <- printLine(adams)
-      allAuthors <- Application.getAllAuthors()
-      _         <- printLine(allAuthors)
-    } yield ()).provide(applicationLive, dataServiceLive, dataSourceLive, postgresLive)
+  override def run = {
+    AuthorDaoService.getAuthors
+      .provide(
+        quillLayer,
+        dataSource,
+        AuthorDaoServiceImpl.layer
+      ).debug("Results")
+      .exitCode
+  }
 }
