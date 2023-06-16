@@ -10,5 +10,9 @@ ThisBuild / scalaVersion := scala3
 lazy val quill = project.in(file("."))
   .configs(IntegrationTest)
   .settings(
+    libraryDependencies ++= Seq(
+      commonDependencies,
+      zioDependencies
+    ).flatten,
     Defaults.itSettings
   )
