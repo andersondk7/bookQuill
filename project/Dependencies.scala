@@ -19,6 +19,8 @@ object Dependencies {
   private val logging = "com.typesafe.scala-logging" %% "scala-logging" % scalalogging_version
   private val scalatic = "org.scalactic" %% "scalactic" % scalactic_version
   private val scalaTest = "org.scalatest" %% "scalatest" % scalatest_version % "it,test"
+  private val zio_version = "2.0.13"
+  private val zio_logging_version = "2.1.13"
 
   // java libs
 //  private val config = "com.typesafe" % "config" % config_version
@@ -29,6 +31,11 @@ object Dependencies {
 
   // zio libs
   private val quill = "io.getquill" %% "quill-jdbc-zio" % "4.6.0"
+  private val zio = "dev.zio" %% "zio" % zio_version
+  private val zioLogging = "dev.zio" %% "zio-logging-slf4j-bridge" % zio_logging_version
+  private val zioTest = "dev.zio" %% "zio-test" % zio_version % "it, test"
+  private val zioTestSbt = "dev.zio" %% "zio-test-sbt" % zio_version % "it, test"
+  private val zioTestMagnolia = "dev.zio" %% "zio-test-magnolia" % zio_version % "it, test"
 
   val commonDependencies: Seq[ModuleID] = Seq(
     catsCore,
@@ -43,6 +50,11 @@ object Dependencies {
 
   val zioDependencies: Seq[ModuleID] = Seq(
     quill,
-    postgresDriver
+    postgresDriver,
+    zio,
+    zioLogging,
+    zioTest,
+    zioTestSbt,
+    zioTestMagnolia
   )
 }
