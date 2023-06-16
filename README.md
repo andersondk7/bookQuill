@@ -29,13 +29,6 @@ this schema is typically:
 - *qa* for separate qa testing
 - *prod* for production deployments
 
-## Usage
-The consumer of the library must:
-1. configure the library with an application.conf.  
-   2. see [example](src/test/resources/application.conf)
-3. on startup create an instance of DaoFactory by calling DaoFactoryBuilder.configure.  If the result is a Left[ConfigurationException] then there you can't continue.  If it is a Right[DaoFactory] then use this to access the different dao classes to interact with the database
-4. on shutdown call DaoFactoryBuilder.shutdown with the DaoFactory.database to clean up 
-
 ## Code structure
 
 ## Performance tests
