@@ -2,6 +2,9 @@ import sbt.*
 
 object Dependencies {
 
+  private val bookapi_version = "0.7.0"
+  private val bookgenerator_version = "0.7.0"
+
   private val cats_version = "2.9.0"
   private val circe_version = "0.14.5"
   private val config_version = "1.4.2"
@@ -37,18 +40,14 @@ object Dependencies {
   private val zioTestSbt = "dev.zio" %% "zio-test-sbt" % zio_version % "it, test"
   private val zioTestMagnolia = "dev.zio" %% "zio-test-magnolia" % zio_version % "it, test"
 
-  val commonDependencies: Seq[ModuleID] = Seq(
-    catsCore,
-//    config,
-    logging,
-    logBack,
-    circeCore,
-    circeGeneric,
-    circeParser,
-    scalaTest
-  )
+  // book domain libs
+  private val bookApi = "org.dka.books" %% "bookdomain" % bookapi_version
+  private val bookGenerator = "org.dka.books" %% "bookdb" % bookgenerator_version % "it, test"
+
 
   val zioDependencies: Seq[ModuleID] = Seq(
+    bookApi,
+    bookGenerator,
     quill,
     postgresDriver,
     zio,

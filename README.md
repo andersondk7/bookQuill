@@ -1,4 +1,4 @@
-# learning Slick (the functional orm)
+# learning Quill 
 
 ## Purpose
 This project is a proof of concept work to encapsulate database access using zio and quill.
