@@ -3,14 +3,13 @@ package org.dka.books.quill.service
 import java.sql.SQLException
 import zio.ZIO
 import org.dka.books.domain.model.item.Author
-import org.dka.books.quill.domain.DBAuthor
 
 /**
  * define access for Authors
  */
 trait AuthorDaoService {
   def getByLastName(lastName: String): ZIO[Any, SQLException, List[Author]]
-  def getAll: ZIO[Any, SQLException, List[DBAuthor]]
+  def getAll: ZIO[Any, SQLException, List[Author]]
 }
 
 /**
