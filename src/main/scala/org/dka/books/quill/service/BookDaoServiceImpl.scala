@@ -14,78 +14,57 @@ import org.dka.books.quill.service.tables.BookTable.*
 import org.dka.books.quill.service.tables.{BookTable, Tables}
 
 import java.sql.SQLException
-import scala.tools.nsc.doc.html.HtmlTags
 
-final case class BookDaoServiceImpl(quill: QuillContext, tables: Tables) extends BookDaoService {
+final case class BookDaoServiceImpl(ctx: QuillContext, tables: Tables) extends BookDaoService, CrudSupport[Book] {
 
-  import quill.*
+  import ctx.*
   import tables.*
 
   //
   // crud operations
+  // todo: refactor into CrudSupport...
   //
-  override def create(book: Book): ZIO[Any, DaoException, Book] = {
-    val dbItem = fromDomain(book)
-    quill
+  override def create(book: Book): ZIO[Any, DaoException, Book] =
+    ctx
       .run(
-        books.insertValue(lift(dbItem))
+        books.insertValue(lift(fromDomain(book)))
       )
-      .catchAll(ex =>
-        ZIO.fail(
-          InsertException(
-            s"could not insert: $book",
-            Some(DaoException.fromSQL(ex))
-          )
-        ))
+      .catchAll(ex => catchInsert(ex, book))
       .as(book)
-  }
 
   override def read(id: ID): ZIO[Any, DaoException, Option[Book]] =
-    quill
+    ctx
       .run(
         for {
           book <- books if book.id == lift(id.value.toString)
         } yield book
       )
       .map(_.headOption.map(toDomain))
-      .catchAll(ex =>
-        ZIO.fail(
-          QueryException(s"could not read $id", Some(DaoException.fromSQL(ex)))
-        ))
+      .catchAll(ex => catchRead(ex, id))
 
   override def delete(id: ID): ZIO[Any, DaoException, ID] =
-    quill
+    ctx
       .run(
         books.filter(b => b.id == lift(id.value.toString)).delete
       )
-      .catchAll(ex =>
-        ZIO.fail(
-          DeleteException(s"could not delete $id", Some(DaoException.fromSQL(ex)))
-        ))
+      .catchAll(ex => catchDelete(ex, id))
       .as(id)
 
   //
   // speciality operations
   //
   override def getAllIds: ZIO[Any, DaoException, List[ID]] =
-    quill
+    ctx
       .run(books)
       .map(_.map(b => ID.build(b.id)))
-      .catchAll(ex =>
-        ZIO.fail(
-          QueryException( s"could not get all bookIds", Some(DaoException.fromSQL(ex))
-          )
-        ))
+      .catchAll(ex => catchQueryIds("could not get all bookIds", ex))
 
   override def getByTitle(title: Title): ZIO[Any, DaoException, List[Book]] =
-    quill
+    ctx
       .run(books.filter(b => b.title == lift(title.value)))
       .map(_.map(toDomain))
-      .catchAll(ex =>
-        ZIO.fail(
-          QueryException(s"could not get all book with title: $title", Some(DaoException.fromSQL(ex))
-          )
-        ))
+      .catchAll(ex => catchQueryList(s"could not find $title", ex))
+
 }
 
 /**
