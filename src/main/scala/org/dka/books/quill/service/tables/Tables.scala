@@ -9,13 +9,14 @@ import org.dka.books.quill.service.QuillContext
 import org.dka.books.quill.service.tables.*
 
 /**
- * allows for mapping of case class types to table names
+ * allows for mapping of table types (i.e. case class) to table names
  */
 final case class Tables(quill: QuillContext) {
   import Tables.*
   import quill.*
 
   val authors: Quoted[EntityQuery[AuthorTable]] = quote { querySchema[AuthorTable]("authors")}
+  val books: Quoted[EntityQuery[BookTable]] = quote { querySchema[BookTable]("books")}
 }
 
 /**

@@ -2,8 +2,8 @@ import sbt.*
 
 object Dependencies {
 
-  private val bookapi_version = "0.7.0"
-  private val bookgenerator_version = "0.7.0"
+  private val bookapi_version = "0.7.1"
+  private val bookgenerator_version = "0.7.1"
 
   private val cats_version = "2.9.0"
   private val circe_version = "0.14.5"
