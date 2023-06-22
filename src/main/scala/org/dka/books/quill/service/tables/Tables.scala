@@ -20,7 +20,9 @@ final case class Tables(quill: QuillContext) {
 
   val books: Quoted[EntityQuery[BookTable]] = quote(querySchema[BookTable]("books"))
 
-  val countries: Quoted[EntityQuery[CountryTable]] = quote(querySchema[CountryTable]("countries"))
+  val countries: Quoted[EntityQuery[CountryTable]]  = quote(querySchema[CountryTable]("countries"))
+
+  val locations: Quoted[EntityQuery[LocationTable]] = quote(querySchema[LocationTable]("locations"))
 
 }
 
