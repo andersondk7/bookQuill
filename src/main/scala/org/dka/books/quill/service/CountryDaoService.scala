@@ -16,10 +16,10 @@ object CountryDaoService {
   //
   // crud operations
   //
-  def get(id: ID) = ZIO.serviceWithZIO[CountryDaoService](_.read(id))
+  def get(id: ID): ZIO[CountryDaoService, DaoException, Option[Country]] = ZIO.serviceWithZIO[CountryDaoService](_.read(id))
 
-  def create(country: Country) = ZIO.serviceWithZIO[CountryDaoService](_.create(country))
+  def create(country: Country): ZIO[CountryDaoService, DaoException, Country] = ZIO.serviceWithZIO[CountryDaoService](_.create(country))
 
-  def delete(id: ID) = ZIO.serviceWithZIO[CountryDaoService](_.delete(id))
+  def delete(id: ID): ZIO[CountryDaoService, DaoException, ID] = ZIO.serviceWithZIO[CountryDaoService](_.delete(id))
 
 }

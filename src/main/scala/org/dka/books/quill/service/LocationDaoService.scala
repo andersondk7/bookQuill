@@ -20,11 +20,11 @@ object LocationDaoService {
   //
   // crud operations
   //
-  def get(id: ID) = ZIO.serviceWithZIO[LocationDaoService](_.read(id))
+  def get(id: ID): ZIO[LocationDaoService, DaoException, Option[Location]] = ZIO.serviceWithZIO[LocationDaoService](_.read(id))
 
-  def create(location: Location) = ZIO.serviceWithZIO[LocationDaoService](_.create(location))
+  def create(location: Location): ZIO[LocationDaoService, DaoException, Location] = ZIO.serviceWithZIO[LocationDaoService](_.create(location))
 
-  def delete(id: ID) = ZIO.serviceWithZIO[LocationDaoService](_.delete(id))
+  def delete(id: ID): ZIO[LocationDaoService, DaoException, ID] = ZIO.serviceWithZIO[LocationDaoService](_.delete(id))
 
   //
   // speciality operations

@@ -36,6 +36,6 @@ final case class Tables(quill: QuillContext) {
  */
 object Tables {
 
-  val tablesLayer = ZLayer.fromFunction(Tables.apply _)
+  val tablesLayer: ZLayer[QuillContext, Nothing, Tables] = ZLayer.fromFunction(Tables.apply _)
 
 }

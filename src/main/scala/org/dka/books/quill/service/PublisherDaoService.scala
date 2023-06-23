@@ -20,11 +20,11 @@ object PublisherDaoService {
   //
   // crud operations
   //
-  def get(id: ID) = ZIO.serviceWithZIO[PublisherDaoService](_.read(id))
+  def get(id: ID): ZIO[PublisherDaoService, DaoException, Option[Publisher]] = ZIO.serviceWithZIO[PublisherDaoService](_.read(id))
 
-  def create(publisher: Publisher) = ZIO.serviceWithZIO[PublisherDaoService](_.create(publisher))
+  def create(publisher: Publisher): ZIO[PublisherDaoService, DaoException, Publisher] = ZIO.serviceWithZIO[PublisherDaoService](_.create(publisher))
 
-  def delete(id: ID) = ZIO.serviceWithZIO[PublisherDaoService](_.delete(id))
+  def delete(id: ID): ZIO[PublisherDaoService, DaoException, ID] = ZIO.serviceWithZIO[PublisherDaoService](_.delete(id))
 
   //
   // speciality operations

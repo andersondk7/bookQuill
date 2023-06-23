@@ -72,7 +72,7 @@ final case class BookDaoServiceImpl(ctx: QuillContext, tables: Tables) extends B
     ctx
       .run(
         for {
-          bas <- authorsBooks if (bas.bookId == lift(bookId.value.toString))
+          bas <- authorsBooks if bas.bookId == lift(bookId.value.toString)
           b   <- books.join(_.id == bas.bookId)
           a   <- authors.join(_.id == bas.authorId)
         } yield (b.title, a.lastName, a.firstName, bas.authorOrder)
@@ -90,7 +90,7 @@ final case class BookDaoServiceImpl(ctx: QuillContext, tables: Tables) extends B
     ctx
       .run(
         for {
-          bas <- authorsBooks if (bas.authorId == lift(authorId.value.toString))
+          bas <- authorsBooks if bas.authorId == lift(authorId.value.toString)
           b   <- books.join(_.id == bas.bookId)
           a   <- authors.join(_.id == bas.authorId)
         } yield (b.title, a.lastName, a.firstName, bas.authorOrder)
@@ -111,7 +111,7 @@ final case class BookDaoServiceImpl(ctx: QuillContext, tables: Tables) extends B
  */
 object BookDaoServiceImpl {
 
-  def BasToDomain(tuple: (String, String, Option[String], Int)): BookAuthorSummary = {
+  private def BasToDomain(tuple: (String, String, Option[String], Int)): BookAuthorSummary = {
     val (title, lastName, firstName, authorOrder) = tuple
     BookAuthorSummary.fromDB(title, lastName, firstName, authorOrder)
   }
