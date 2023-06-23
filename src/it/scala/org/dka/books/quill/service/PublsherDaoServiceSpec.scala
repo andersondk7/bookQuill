@@ -12,10 +12,11 @@ import java.time.LocalDate
 object PublsherDaoServiceSpec extends ZIOSpecDefault {
   // note:  createDate will not be the same
   private val randomHouse = Publisher(
-    ID.build("076931dc-1ed2-4abe-972c-d4aede099d70"),
-    Version.build(1),
-    PublisherName.build("RandomHouse"),
-    LocationID.build("7e150434-d4db-4bda-8839-a4ab24cbf91b")
+    id = ID.build("076931dc-1ed2-4abe-972c-d4aede099d70"),
+    version = Version.build(1),
+    publisherName = PublisherName.build("RandomHouse"),
+    locationId = Some(LocationID.build("7e150434-d4db-4bda-8839-a4ab24cbf91b")),
+    webSite = None
   )
 
   override def spec: Spec[TestEnvironment with Scope, Any] = suite("PublisherDao") (
@@ -23,11 +24,11 @@ object PublsherDaoServiceSpec extends ZIOSpecDefault {
     test("publisher by id (seed)") {
 
       (for {
-        publsihers <- PublisherDaoService.get(randomHouse.id)
+        publshers <- PublisherDaoService.get(randomHouse.id)
       } yield {
         assertTrue(
-          locations.size == 1,
-          locations.head.copy(createDate = randomHouse.createDate) == randomHouse
+          publshers.size == 1,
+          publshers.head.copy(createDate = randomHouse.createDate) == randomHouse
         )
       })
         .provide(

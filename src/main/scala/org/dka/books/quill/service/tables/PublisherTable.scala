@@ -22,7 +22,7 @@ final case class PublisherTable(
   override val version: Int,
   publisherName: String,
   locationId: Option[String],
-  webSite: Option[String],
+  website: Option[String],
   override val createDate: Timestamp,
   override val updateDate: Option[Timestamp])
   extends TableUpdate
@@ -34,7 +34,7 @@ object PublisherTable extends DomainSupport[PublisherTable, Publisher] {
     version = Version.build(db.version),
     publisherName = PublisherName.build(db.publisherName),
     locationId = LocationID.fromOpt(db.locationId),
-    webSite = WebSite.fromOpt(db.webSite),
+    webSite = WebSite.fromOpt(db.website),
     createDate = CreateDate.build(db.createDate),
     lastUpdate = db.updateDate.map(UpdateDate.build)
   )
@@ -44,7 +44,7 @@ object PublisherTable extends DomainSupport[PublisherTable, Publisher] {
     version = publisher.version.value,
     publisherName = publisher.publisherName.value,
     locationId = publisher.locationId.map(_.value.toString),
-    webSite = publisher.webSite.map(_.value),
+    website = publisher.webSite.map(_.value),
     createDate = publisher.createDate.asTimestamp,
     updateDate = publisher.lastUpdate.map(_.asTimeStamp)
   )
