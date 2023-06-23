@@ -19,6 +19,6 @@ object QuillContext {
 
   val quillLayer: ZLayer[DataSource, Nothing, QuillContext] = ZLayer.fromFunction(QuillContext.apply _)
 
-  val dataSourceLayer: ZLayer[Any, Throwable, DataSource]   = Quill.DataSource.fromPrefix("postgres")
+  val dataSourceLayer: ZLayer[Any, Throwable, DataSource] = Quill.DataSource.fromPrefix("postgres")
 
 }

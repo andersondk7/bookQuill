@@ -26,16 +26,16 @@ object AuthorDaoService {
   //
   // crud operations
   //
-  def get(id: ID)            = ZIO.serviceWithZIO[AuthorDaoService](_.read(id))
+  def get(id: ID) = ZIO.serviceWithZIO[AuthorDaoService](_.read(id))
 
   def create(author: Author) = ZIO.serviceWithZIO[AuthorDaoService](_.create(author))
 
-  def delete(id: ID)         = ZIO.serviceWithZIO[AuthorDaoService](_.delete(id))
+  def delete(id: ID) = ZIO.serviceWithZIO[AuthorDaoService](_.delete(id))
 
   //
   // speciality operations
   //
-  def getAll                          = ZIO.serviceWithZIO[AuthorDaoService](_.getAll)
+  def getAll = ZIO.serviceWithZIO[AuthorDaoService](_.getAll)
 
   def getByLastName(lastName: String) = ZIO.serviceWithZIO[AuthorDaoService](_.getByLastName(lastName))
 

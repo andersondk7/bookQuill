@@ -26,6 +26,9 @@ final case class Tables(quill: QuillContext) {
 
   val publishers: Quoted[EntityQuery[PublisherTable]] = quote(querySchema[PublisherTable]("publishers"))
 
+  // todo: change to authorBookSummary, in both db, domain, anorm, and quill
+  val authorsBooks: Quoted[EntityQuery[AuthorBook]] = quote(querySchema[AuthorBook]("authors_books"))
+
 }
 
 /**
