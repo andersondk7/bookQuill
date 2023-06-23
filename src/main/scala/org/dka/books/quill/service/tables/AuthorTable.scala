@@ -23,7 +23,7 @@ final case class AuthorTable(
   lastName: String,
   firstName: Option[String],
   locationId: Option[String],
-  createDate: Timestamp,
+  override val createDate: Timestamp,
   override val updateDate: Option[Timestamp])
   extends TableUpdate
 

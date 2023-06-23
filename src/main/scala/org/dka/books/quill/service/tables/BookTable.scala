@@ -20,7 +20,7 @@ final case class BookTable(
   price: BigDecimal,
   publisherId: Option[String],
   publishDate: Option[LocalDate],
-  createDate: Timestamp,
+  override val createDate: Timestamp,
   override val updateDate: Option[Timestamp])
   extends TableUpdate
 

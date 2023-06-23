@@ -10,7 +10,7 @@ final case class CountryTable(
   override val version: Int,
   countryName: String,
   countryAbbreviation: String,
-  createDate: Timestamp,
+  override val createDate: Timestamp,
   override val updateDate: Option[Timestamp])
   extends TableUpdate
 

@@ -17,36 +17,36 @@ skip this layer and just define the Tables Quoted[EntityQuery[DomainItem] direct
  *   - read/write to the underlying database tables
  *   - conversion to/from domain types
  */
-final case class LocationTable(
+final case class PublisherTable(
   override val id: String,
   override val version: Int,
-  locationName: String,
-  locationAbbreviation: String,
-  countryId: String,
+  publisherName: String,
+  locationId: Option[String],
+  webSite: Option[String],
   override val createDate: Timestamp,
   override val updateDate: Option[Timestamp])
   extends TableUpdate
 
-object LocationTable extends DomainSupport[LocationTable, Location] {
+object PublisherTable extends DomainSupport[PublisherTable, Publisher] {
 
-  override def toDomain(db: LocationTable): Location = Location(
+  override def toDomain(db: PublisherTable): Publisher = Publisher(
     id = ID.build(db.id),
     version = Version.build(db.version),
-    locationName = LocationName.build(db.locationName),
-    locationAbbreviation = LocationAbbreviation.build(db.locationAbbreviation),
-    countryID = CountryID.build(db.countryId),
+    publisherName = PublisherName.build(db.publisherName),
+    locationId = LocationID.fromOpt(db.locationId),
+    webSite = WebSite.fromOpt(db.webSite),
     createDate = CreateDate.build(db.createDate),
     lastUpdate = db.updateDate.map(UpdateDate.build)
   )
 
-  override def fromDomain(location: Location): LocationTable = LocationTable(
-    id = location.id.value.toString,
-    version = location.version.value,
-    locationName = location.locationName.value,
-    locationAbbreviation = location.locationAbbreviation.value,
-    countryId = location.countryID.value.toString,
-    createDate = location.createDate.asTimestamp,
-    updateDate = location.lastUpdate.map(_.asTimeStamp)
+  override def fromDomain(publisher: Publisher): PublisherTable = PublisherTable(
+    id = publisher.id.value.toString,
+    version = publisher.version.value,
+    publisherName = publisher.publisherName.value,
+    locationId = publisher.locationId.map(_.value.toString),
+    webSite = publisher.webSite.map(_.value),
+    createDate = publisher.createDate.asTimestamp,
+    updateDate = publisher.lastUpdate.map(_.asTimeStamp)
   )
 
 }

@@ -8,6 +8,8 @@ trait TableUpdate {
 
   def version: Int
 
+  def createDate: Timestamp
+
   def updateDate: Option[Timestamp]
 
 }
