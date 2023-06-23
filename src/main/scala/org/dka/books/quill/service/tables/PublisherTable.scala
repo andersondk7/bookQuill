@@ -1,9 +1,9 @@
 package org.dka.books.quill.service.tables
 
-import java.sql.Timestamp
-
 import org.dka.books.domain.model.fields.*
 import org.dka.books.domain.model.item.*
+
+import java.sql.Timestamp
 
 /*
 if I understood zio encoder/decoders better then I could may be able to
@@ -17,36 +17,36 @@ skip this layer and just define the Tables Quoted[EntityQuery[DomainItem] direct
  *   - read/write to the underlying database tables
  *   - conversion to/from domain types
  */
-final case class AuthorTable(
+final case class PublisherTable(
   override val id: String,
   override val version: Int,
-  lastName: String,
-  firstName: Option[String],
+  publisherName: String,
   locationId: Option[String],
+  website: Option[String],
   override val createDate: Timestamp,
   override val updateDate: Option[Timestamp])
   extends TableUpdate
 
-object AuthorTable extends DomainSupport[AuthorTable, Author] {
+object PublisherTable extends DomainSupport[PublisherTable, Publisher] {
 
-  override def toDomain(db: AuthorTable): Author = Author(
+  override def toDomain(db: PublisherTable): Publisher = Publisher(
     id = ID.build(db.id),
     version = Version.build(db.version),
-    lastName = LastName.build(db.lastName),
-    firstName = FirstName.build(db.firstName),
+    publisherName = PublisherName.build(db.publisherName),
     locationId = LocationID.fromOpt(db.locationId),
+    webSite = WebSite.fromOpt(db.website),
     createDate = CreateDate.build(db.createDate),
     lastUpdate = db.updateDate.map(UpdateDate.build)
   )
 
-  override def fromDomain(author: Author): AuthorTable = AuthorTable(
-    id = author.id.value.toString,
-    version = author.version.value,
-    lastName = author.lastName.value,
-    firstName = author.firstName.map(_.value),
-    locationId = author.locationId.map(_.value.toString),
-    createDate = author.createDate.asTimestamp,
-    updateDate = author.lastUpdate.map(_.asTimeStamp)
+  override def fromDomain(publisher: Publisher): PublisherTable = PublisherTable(
+    id = publisher.id.value.toString,
+    version = publisher.version.value,
+    publisherName = publisher.publisherName.value,
+    locationId = publisher.locationId.map(_.value.toString),
+    website = publisher.webSite.map(_.value),
+    createDate = publisher.createDate.asTimestamp,
+    updateDate = publisher.lastUpdate.map(_.asTimeStamp)
   )
 
 }

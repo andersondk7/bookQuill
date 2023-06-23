@@ -10,6 +10,7 @@ import zio.test.Assertion.*
 import java.time.LocalDate
 
 object BookDaoServiceSpec extends ZIOSpecDefault {
+
   // note:  createDate will not be the same
   private val janeEyre = Book(
     ID.build("a310df63-d54a-4f11-801e-44a3796cedfa"),
@@ -20,18 +21,15 @@ object BookDaoServiceSpec extends ZIOSpecDefault {
     PublishDate.build(Some(LocalDate.of(1847, 10, 19)))
   )
 
-  override def spec: Spec[TestEnvironment with Scope, Any] = suite("BookDao") (
-
+  override def spec: Spec[TestEnvironment with Scope, Any] = suite("BookDao")(
     test("book by name (seed)") {
 
       (for {
         books <- BookDaoService.get(janeEyre.title)
-      } yield {
-        assertTrue(
-          books.size == 1,
-          books.head.copy(createDate = janeEyre.createDate) == janeEyre
-        )
-      })
+      } yield assertTrue(
+        books.size == 1,
+        books.head.copy(createDate = janeEyre.createDate) == janeEyre
+      ))
         .provide(
           BookDaoServiceImpl.layer,
           Tables.tablesLayer,
@@ -39,17 +37,14 @@ object BookDaoServiceSpec extends ZIOSpecDefault {
           QuillContext.dataSourceLayer
         )
     },
-
     test("book by id (seed)") {
 
       (for {
         books <- BookDaoService.get(janeEyre.id)
-      } yield {
-        assertTrue(
-          books.size == 1,
-          books.head.copy(createDate = janeEyre.createDate) == janeEyre
-        )
-      })
+      } yield assertTrue(
+        books.size == 1,
+        books.head.copy(createDate = janeEyre.createDate) == janeEyre
+      ))
         .provide(
           BookDaoServiceImpl.layer,
           Tables.tablesLayer,
@@ -62,15 +57,13 @@ object BookDaoServiceSpec extends ZIOSpecDefault {
 
       (for {
         inserted <- BookDaoService.create(jenny)
-        books <- BookDaoService.get(jenny.id)
-        deleted <- BookDaoService.delete(jenny.id)
-      } yield {
-        assertTrue(
-          books.size == 1,
-          books.head.copy(createDate = jenny.createDate) == jenny,
-          deleted == jenny.id
-        )
-      })
+        books    <- BookDaoService.get(jenny.id)
+        deleted  <- BookDaoService.delete(jenny.id)
+      } yield assertTrue(
+        books.size == 1,
+        books.head.copy(createDate = jenny.createDate) == jenny,
+        deleted == jenny.id
+      ))
         .provide(
           BookDaoServiceImpl.layer,
           Tables.tablesLayer,
@@ -78,20 +71,16 @@ object BookDaoServiceSpec extends ZIOSpecDefault {
           QuillContext.dataSourceLayer
         )
     },
-
-      test("all books count") {
-        (for {
+    test("all books count") {
+      (for {
         count <- BookDaoService.getIds
-      }  yield {
-        assertTrue(count.size == 110)
-      }).provide(
+      } yield assertTrue(count.size == 110)).provide(
         BookDaoServiceImpl.layer,
         Tables.tablesLayer,
         QuillContext.quillLayer,
         QuillContext.dataSourceLayer
       )
     }
-
   )
 
 }

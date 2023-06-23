@@ -11,29 +11,32 @@ import org.dka.books.domain.services.DaoException
  * additional services for authors beyond those defined in the CrudService
  */
 trait AuthorDaoService extends CrudService[Author] {
-  
-  
+
   def getByLastName(lastName: String): ZIO[Any, DaoException, List[Author]]
+
   def getAll: ZIO[Any, DaoException, List[Author]]
+
 }
 
 /**
  * extract specific implementation from environment and execute methods
  */
 object AuthorDaoService {
-  
+
   //
   // crud operations
   //
-  def get(id: ID) = ZIO.serviceWithZIO[AuthorDaoService](_.read(id))
-  def create(author: Author) = ZIO.serviceWithZIO[AuthorDaoService](_.create(author))
-  def delete(id: ID) = ZIO.serviceWithZIO[AuthorDaoService](_.delete(id))
+  def get(id: ID): ZIO[AuthorDaoService, DaoException, Option[Author]] = ZIO.serviceWithZIO[AuthorDaoService](_.read(id))
+
+  def create(author: Author): ZIO[AuthorDaoService, DaoException, Author] = ZIO.serviceWithZIO[AuthorDaoService](_.create(author))
+
+  def delete(id: ID): ZIO[AuthorDaoService, DaoException, ID] = ZIO.serviceWithZIO[AuthorDaoService](_.delete(id))
 
   //
   // speciality operations
   //
-  def getAll = ZIO.serviceWithZIO[AuthorDaoService](_.getAll)
-  def getByLastName(lastName: String) = ZIO.serviceWithZIO[AuthorDaoService](_.getByLastName(lastName))
+  def getAll: ZIO[AuthorDaoService, DaoException, List[Author]] = ZIO.serviceWithZIO[AuthorDaoService](_.getAll)
+
+  def getByLastName(lastName: String): ZIO[AuthorDaoService, DaoException, List[Author]] = ZIO.serviceWithZIO[AuthorDaoService](_.getByLastName(lastName))
+
 }
-
-

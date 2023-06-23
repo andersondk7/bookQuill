@@ -16,30 +16,27 @@ import java.sql.SQLException
 /**
  * implementation of AuthorDaoService using quill for queries
  */
-final case class AuthorDaoServiceImpl(quill: QuillContext, tables: Tables) extends AuthorDaoService {
+final case class AuthorDaoServiceImpl(
+  quill: QuillContext,
+  tables: Tables)
+  extends AuthorDaoService,
+    CrudSupport[Author] {
 
   import quill.*
   import tables.*
 
   //
   // crud operations
+  // todo: refactor into CrudSupport...
   //
 
-  override def create(author: Author): ZIO[Any, DaoException, Author] = {
-    val dbItem = fromDomain(author)
+  override def create(author: Author): ZIO[Any, DaoException, Author] =
     quill
       .run(
-        authors.insertValue(lift(dbItem))
+        authors.insertValue(lift(fromDomain(author)))
       )
-      .catchAll(ex =>
-        ZIO.fail(
-          InsertException(
-            s"could not insert: $author",
-            Some(DaoException.fromSQL(ex))
-          )
-        ))
+      .catchAll(ex => catchInsert(ex, author))
       .as(author)
-  }
 
   override def read(id: ID): ZIO[Any, DaoException, Option[Author]] =
     quill
@@ -49,20 +46,14 @@ final case class AuthorDaoServiceImpl(quill: QuillContext, tables: Tables) exten
         } yield author
       )
       .map(_.headOption.map(toDomain))
-      .catchAll(ex =>
-        ZIO.fail(
-          QueryException(s"could not read $id", Some(DaoException.fromSQL(ex)))
-        ))
+      .catchAll(ex => catchRead(ex, id))
 
   override def delete(id: ID): ZIO[Any, DaoException, ID] =
     quill
       .run(
         authors.filter(a => a.id == lift(id.value.toString)).delete
       )
-      .catchAll(ex =>
-        ZIO.fail(
-          DeleteException(s"could not delete $id", Some(DaoException.fromSQL(ex)))
-        ))
+      .catchAll(ex => catchDelete(ex, id))
       .as(id)
 
   //
@@ -72,16 +63,13 @@ final case class AuthorDaoServiceImpl(quill: QuillContext, tables: Tables) exten
     quill
       .run(authors)
       .map(_.map(toDomain))
-      .catchAll(ex =>
-        ZIO.fail(
-          QueryException(s"could not get all authors", Some(DaoException.fromSQL(ex)))
-        ))
+      .catchAll(ex => catchQueryList("could not get all authors", ex))
 
   override def getByLastName(lastName: String): ZIO[Any, DaoException, List[Author]] =
     quill
       .run(authors.filter(a => a.lastName == quill.lift(lastName)))
       .map(_.map(toDomain))
-      .catchAll(ex => ZIO.fail(DaoException.fromSQL(ex)))
+      .catchAll(ex => catchQueryList(s"could not get by lastName: $lastName", ex))
 
 }
 
