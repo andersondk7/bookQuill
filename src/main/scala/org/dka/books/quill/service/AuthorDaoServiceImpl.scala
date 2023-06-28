@@ -68,6 +68,7 @@ final case class AuthorDaoServiceImpl(
       .catchAll(ex => catchQueryList("could not get all authors", ex))
 
   def getAllOfThem = quill.run(query[AuthorTable])
+  def getAllOfThem2 = quill.run(authors)
 
 
   override def getByLastName(lastName: String): ZIO[Any, DaoException, List[Author]] =
