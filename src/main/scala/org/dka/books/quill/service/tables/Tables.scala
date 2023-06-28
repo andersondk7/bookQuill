@@ -16,18 +16,19 @@ final case class Tables(quill: QuillContext) {
   import Tables.*
   import quill.*
 
-  val authors: Quoted[EntityQuery[AuthorTable]] = quote(querySchema[AuthorTable]("authors"))
+//  val authors: Quoted[EntityQuery[AuthorTable]] = quote(querySchema[AuthorTable]("authors"))
+  inline def authors: Quoted[EntityQuery[AuthorTable]] = quote(querySchema[AuthorTable]("authors"))
 
-  val books: Quoted[EntityQuery[BookTable]] = quote(querySchema[BookTable]("books"))
+  inline def books: Quoted[EntityQuery[BookTable]] = quote(querySchema[BookTable]("books"))
 
-  val countries: Quoted[EntityQuery[CountryTable]] = quote(querySchema[CountryTable]("countries"))
+  inline def countries: Quoted[EntityQuery[CountryTable]] = quote(querySchema[CountryTable]("countries"))
 
-  val locations: Quoted[EntityQuery[LocationTable]] = quote(querySchema[LocationTable]("locations"))
+  inline def locations: Quoted[EntityQuery[LocationTable]] = quote(querySchema[LocationTable]("locations"))
 
-  val publishers: Quoted[EntityQuery[PublisherTable]] = quote(querySchema[PublisherTable]("publishers"))
+  inline def publishers: Quoted[EntityQuery[PublisherTable]] = quote(querySchema[PublisherTable]("publishers"))
 
   // todo: change to authorBookSummary, in both db, domain, anorm, and quill
-  val authorsBooks: Quoted[EntityQuery[AuthorBook]] = quote(querySchema[AuthorBook]("authors_books"))
+  inline def authorsBooks: Quoted[EntityQuery[AuthorBook]] = quote(querySchema[AuthorBook]("authors_books"))
 
 }
 

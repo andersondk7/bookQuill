@@ -59,11 +59,10 @@ final case class BookDaoServiceImpl(ctx: QuillContext, tables: Tables) extends B
       .catchAll(ex => catchQueryIds("could not get all bookIds", ex))
 
   override def getByTitle(title: Title): ZIO[Any, DaoException, List[Book]] = {
-    val query = quote {
-      books.filter(b => b.title == lift(title.value))
-    }
     ctx
-      .run(query)
+      .run(
+        books.filter(b => b.title == lift(title.value))
+      )
       .map(_.map(toDomain))
       .catchAll(ex => catchQueryList(s"could not find $title", ex))
   }
