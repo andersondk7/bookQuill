@@ -1,6 +1,7 @@
 package org.dka.books.quill.service
 
 import io.getquill.*
+import io.getquill.autoQuote
 import io.getquill.jdbczio.Quill
 import io.getquill.jdbczio.Quill.Postgres
 import org.dka.books.domain.model.fields.ID
@@ -10,6 +11,7 @@ import org.dka.books.quill.service.tables.AuthorTable.*
 import org.dka.books.quill.service.tables.{AuthorTable, Tables}
 import zio.ZIO.fail
 import zio.{ZIO, ZLayer, *}
+
 
 import java.sql.SQLException
 
@@ -60,16 +62,23 @@ final case class AuthorDaoServiceImpl(
   // speciality methods
   //
   override def getAll: ZIO[Any, DaoException, List[Author]] =
-    quill
-      .run(authors)
-      .map(_.map(toDomain))
-      .catchAll(ex => catchQueryList("could not get all authors", ex))
+//    getAllOfThem.map(_.map(toDomain)).catchAll(ex => catchQueryList("could not get all authors", ex))
+        quill
+        .run(authors)
+        .map(_.map(toDomain))
+        .catchAll(ex => catchQueryList("could not get all authors", ex))
+
+
+  def getAllOfThem = quill.run(authors)
+
 
   override def getByLastName(lastName: String): ZIO[Any, DaoException, List[Author]] =
     quill
       .run(authors.filter(a => a.lastName == quill.lift(lastName)))
       .map(_.map(toDomain))
       .catchAll(ex => catchQueryList(s"could not get by lastName: $lastName", ex))
+
+
 
 }
 
