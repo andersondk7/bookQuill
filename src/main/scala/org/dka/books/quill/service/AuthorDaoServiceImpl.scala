@@ -61,14 +61,15 @@ final case class AuthorDaoServiceImpl(
   //
   // speciality methods
   //
-  override def getAll: ZIO[Any, DaoException, List[Author]] =
-    quill
-      .run(authors)
-      .map(_.map(toDomain))
-      .catchAll(ex => catchQueryList("could not get all authors", ex))
+  inline override def getAll: ZIO[Any, DaoException, List[Author]] =
+//    getAllOfThem.map(_.map(toDomain)).catchAll(ex => catchQueryList("could not get all authors", ex))
+        quill
+        .run(authors)
+        .map(_.map(toDomain))
+        .catchAll(ex => catchQueryList("could not get all authors", ex))
 
-  def getAllOfThem = quill.run(query[AuthorTable])
-  def getAllOfThem2 = quill.run(authors)
+
+  inline def getAllOfThem = quill.run(authors)
 
 
   override def getByLastName(lastName: String): ZIO[Any, DaoException, List[Author]] =
