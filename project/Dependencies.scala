@@ -2,7 +2,7 @@ import sbt.*
 
 object Dependencies {
 
-  private val bookapi_version = "0.7.2-SNAPSHOT"
+  private val bookapi_version = "0.7.2"
   private val bookgenerator_version = "0.7.2"
 
   private val cats_version = "2.9.0"
@@ -47,6 +47,8 @@ object Dependencies {
     bookGenerator,
     quill,
     postgresDriver,
+    scalatic,
+    scalaTest,
     zio,
     zioLogging,
     zioTest,
